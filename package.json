@@ -2,8 +2,9 @@
   "name": "mcp-clickup",
   "version": "1.0.2",
   "description": "A Model Context Protocol server for the ClickUp API.",
-  "main": "index.js",
   "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
     "mcp-clickup": "dist/index.js"
   },
@@ -12,6 +13,7 @@
   ],
   "scripts": {
     "build": "tsc && shx chmod +x dist/*.js",
+    "start": "node dist/index.js",
     "prepare": "npm run build",
     "watch": "tsc --watch",
     "inspector": "npx @modelcontextprotocol/inspector dist/index.js",
@@ -44,8 +46,8 @@
   "devDependencies": {
     "@changesets/cli": "^2.27.1",
     "@types/node": "^22.13.4",
-    "shx": "^0.3.4",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.2",
+    "shx": "^0.3.4"
   },
   "publishConfig": {
     "access": "public"

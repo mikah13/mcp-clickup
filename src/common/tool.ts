@@ -6,17 +6,6 @@ const authenticateTool: Tool = {
     'Authenticate with ClickUp API using an API token and workspace ID',
   inputSchema: {
     type: 'object',
-    properties: {
-      api_token: {
-        type: 'string',
-        description: 'ClickUp API token for authentication',
-      },
-      workspace_id: {
-        type: 'string',
-        description: 'ClickUp workspace ID for authentication',
-      },
-    },
-    required: ['api_token', 'workspace_id'],
   },
 };
 
@@ -26,16 +15,12 @@ const getTaskTool: Tool = {
   inputSchema: {
     type: 'object',
     properties: {
-      api_token: {
-        type: 'string',
-        description: 'ClickUp API token for authentication',
-      },
       task_id: {
         type: 'string',
         description: 'The ID of the ClickUp task to retrieve',
       },
     },
-    required: ['api_token', 'task_id'],
+    required: ['task_id'],
   },
 };
 
@@ -45,20 +30,12 @@ const getTaskByCustomIdTool: Tool = {
   inputSchema: {
     type: 'object',
     properties: {
-      api_token: {
-        type: 'string',
-        description: 'ClickUp API token for authentication',
-      },
       custom_id: {
         type: 'string',
         description: 'The custom ID of the ClickUp task to retrieve',
       },
-      workspace_id: {
-        type: 'string',
-        description: 'The workspace ID required for the API request',
-      },
     },
-    required: ['api_token', 'custom_id', 'workspace_id'],
+    required: ['custom_id'],
   },
 };
 
@@ -68,22 +45,15 @@ const getTasksTool: Tool = {
   inputSchema: {
     type: 'object',
     properties: {
-      api_token: {
-        type: 'string',
-        description: 'ClickUp API token for authentication',
-      },
-      workspace_id: {
-        type: 'string',
-        description: 'ClickUp workspace ID',
-      },
       task_ids: {
         type: 'array',
         items: { type: 'string' },
         description: 'List of task IDs to retrieve',
       },
     },
-    required: ['api_token', 'workspace_id', 'task_ids'],
+    required: ['task_ids'],
   },
 };
 
-export { authenticateTool, getTaskTool, getTaskByCustomIdTool, getTasksTool };
+export { authenticateTool, getTaskByCustomIdTool, getTasksTool, getTaskTool };
+

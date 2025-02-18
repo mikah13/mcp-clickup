@@ -6,15 +6,17 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
-import { ClickUpClient } from './common/clickup';
-import { formatErrorResponse, ToolError } from './common/errors';
+import { ClickUpClient } from './common/clickup.js';
+import { formatErrorResponse, ToolError } from './common/errors.js';
 import {
   authenticateTool,
   getTaskByCustomIdTool,
   getTasksTool,
   getTaskTool,
-} from './common/tool';
+} from './common/tool.js';
 import dottenv from 'dotenv';
+
+dottenv.config();
 async function main() {
   console.error('Starting ClickUp MCP Server...');
 
@@ -53,17 +55,6 @@ async function main() {
 
         switch (request.params.name) {
           case 'clickup_authenticate': {
-            const { api_token, workspace_id } = request.params.arguments as {
-              api_token: string;
-              workspace_id: string;
-            };
-            if (!api_token || !workspace_id) {
-              throw new ToolError(
-                'Missing required arguments: api_token and workspace_id',
-                'INVALID_ARGUMENTS',
-                { required: ['api_token', 'workspace_id'] }
-              );
-            }
             const response = await clickUpClient.authenticate();
             return {
               content: [{ type: 'text', text: JSON.stringify(response) }],
@@ -71,15 +62,14 @@ async function main() {
           }
 
           case 'clickup_get_task': {
-            const { api_token, task_id } = request.params.arguments as {
-              api_token: string;
+            const { task_id } = request.params.arguments as {
               task_id: string;
             };
-            if (!api_token || !task_id) {
+            if (!task_id) {
               throw new ToolError(
-                'Missing required arguments: api_token and task_id',
+                'Missing required arguments: task_id',
                 'INVALID_ARGUMENTS',
-                { required: ['api_token', 'task_id'] }
+                { required: ['task_id'] }
               );
             }
             const response = await clickUpClient.getTask(task_id);
@@ -89,20 +79,16 @@ async function main() {
           }
 
           case 'clickup_get_task_by_custom_id': {
-            const { api_token, custom_id, workspace_id } = request.params
-              .arguments as {
-              api_token: string;
+            const { custom_id } = request.params.arguments as {
               custom_id: string;
-              workspace_id: string;
             };
-            if (!api_token || !custom_id || !workspace_id) {
+            if (!custom_id) {
               throw new ToolError(
-                'Missing required arguments: api_token, custom_id, and workspace_id',
+                'Missing required arguments: custom_id',
                 'INVALID_ARGUMENTS',
-                { required: ['api_token', 'custom_id', 'workspace_id'] }
+                { required: ['custom_id'] }
               );
             }
-            const clickUpClient = new ClickUpClient(api_token, workspace_id);
             const response = await clickUpClient.getTaskByCustomId(custom_id);
             return {
               content: [{ type: 'text', text: JSON.stringify(response) }],
@@ -110,17 +96,14 @@ async function main() {
           }
 
           case 'clickup_get_tasks': {
-            const { api_token, workspace_id, task_ids } = request.params
-              .arguments as {
-              api_token: string;
-              workspace_id: string;
+            const { task_ids } = request.params.arguments as {
               task_ids: string[];
             };
-            if (!api_token || !workspace_id || !task_ids.length) {
+            if (!task_ids.length) {
               throw new ToolError(
-                'Missing required arguments: api_token, workspace_id, and task_ids',
+                'Missing required arguments: task_ids',
                 'INVALID_ARGUMENTS',
-                { required: ['api_token', 'workspace_id', 'task_ids'] }
+                { required: ['task_ids'] }
               );
             }
             const response = await clickUpClient.getTasks(task_ids);
