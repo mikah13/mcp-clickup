@@ -2,17 +2,18 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
-    CallToolRequest,
-    CallToolRequestSchema,
-    ListToolsRequestSchema
+  CallToolRequest,
+  CallToolRequestSchema,
+  ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
-import { ClickUpClient } from './clickup';
+import { ClickUpClient } from './common/clickup';
 import {
-    authenticateTool,
-    getTaskByCustomIdTool,
-    getTasksTool,
-    getTaskTool,
-} from './tool';
+  authenticateTool,
+  getTaskByCustomIdTool,
+  getTasksTool,
+  getTaskTool,
+} from './common/tool';
+import { ToolError, formatErrorResponse } from './common/errors';
 
 async function main() {
   console.error('Starting ClickUp MCP Server...');
@@ -34,7 +35,7 @@ async function main() {
       console.error('Received CallToolRequest:', request);
       try {
         if (!request.params.arguments) {
-          throw new Error('No arguments provided');
+          throw new ToolError('No arguments provided', 'MISSING_ARGUMENTS');
         }
 
         switch (request.params.name) {
@@ -44,8 +45,10 @@ async function main() {
               workspace_id: string;
             };
             if (!api_token || !workspace_id) {
-              throw new Error(
-                'Missing required arguments: api_token and workspace_id'
+              throw new ToolError(
+                'Missing required arguments: api_token and workspace_id',
+                'INVALID_ARGUMENTS',
+                { required: ['api_token', 'workspace_id'] }
               );
             }
             const clickUpClient = new ClickUpClient(api_token, workspace_id);
@@ -61,8 +64,10 @@ async function main() {
               task_id: string;
             };
             if (!api_token || !task_id) {
-              throw new Error(
-                'Missing required arguments: api_token and task_id'
+              throw new ToolError(
+                'Missing required arguments: api_token and task_id',
+                'INVALID_ARGUMENTS',
+                { required: ['api_token', 'task_id'] }
               );
             }
             const clickUpClient = new ClickUpClient(api_token, '');
@@ -80,8 +85,10 @@ async function main() {
               workspace_id: string;
             };
             if (!api_token || !custom_id || !workspace_id) {
-              throw new Error(
-                'Missing required arguments: api_token, custom_id, and workspace_id'
+              throw new ToolError(
+                'Missing required arguments: api_token, custom_id, and workspace_id',
+                'INVALID_ARGUMENTS',
+                { required: ['api_token', 'custom_id', 'workspace_id'] }
               );
             }
             const clickUpClient = new ClickUpClient(api_token, workspace_id);
@@ -99,8 +106,10 @@ async function main() {
               task_ids: string[];
             };
             if (!api_token || !workspace_id || !task_ids.length) {
-              throw new Error(
-                'Missing required arguments: api_token, workspace_id, and task_ids'
+              throw new ToolError(
+                'Missing required arguments: api_token, workspace_id, and task_ids',
+                'INVALID_ARGUMENTS',
+                { required: ['api_token', 'workspace_id', 'task_ids'] }
               );
             }
             const clickUpClient = new ClickUpClient(api_token, workspace_id);
@@ -111,20 +120,14 @@ async function main() {
           }
 
           default:
-            throw new Error(`Unknown tool: ${request.params.name}`);
+            throw new ToolError(
+              `Unknown tool: ${request.params.name}`,
+              'UNKNOWN_TOOL'
+            );
         }
       } catch (error) {
         console.error('Error executing tool:', error);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify({
-                error: error instanceof Error ? error.message : String(error),
-              }),
-            },
-          ],
-        };
+        return formatErrorResponse(error);
       }
     }
   );
