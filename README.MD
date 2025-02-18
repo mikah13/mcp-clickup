@@ -1,5 +1,7 @@
 # ClickUp MCP Server
 
+[![smithery badge](https://smithery.ai/badge/@mikah13/mcp-clickup)](https://smithery.ai/server/@mikah13/mcp-clickup)
+
 MCP Server for the ClickUp API, enabling Claude to interact with ClickUp workspaces.
 
 ## Tools
