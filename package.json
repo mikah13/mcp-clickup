@@ -1,6 +1,6 @@
 {
   "name": "mcp-clickup",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "ClickUp MCP server",
   "main": "index.ts",
   "scripts": {
