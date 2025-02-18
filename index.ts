@@ -14,6 +14,7 @@ import {
   getTasksTool,
   getTaskTool,
 } from './common/tool';
+import dottenv from 'dotenv';
 async function main() {
   console.error('Starting ClickUp MCP Server...');
 
