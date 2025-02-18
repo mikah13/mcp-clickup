@@ -1,22 +1,20 @@
 #!/usr/bin/env node
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import {
-  CallToolRequest,
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-} from '@modelcontextprotocol/sdk/types.js';
-import { ClickUpClient } from './common/clickup.js';
-import { formatErrorResponse, ToolError } from './common/errors.js';
 import {
   authenticateTool,
   getTaskByCustomIdTool,
   getTasksTool,
   getTaskTool,
-} from './common/tool.js';
-import dottenv from 'dotenv';
+} from './common/tool';
 
-dottenv.config();
+const tools = [
+  authenticateTool,
+  getTaskByCustomIdTool,
+  getTasksTool,
+  getTaskTool,
+];
+
 async function main() {
   console.error('Starting ClickUp MCP Server...');
 
@@ -30,7 +28,7 @@ async function main() {
     process.exit(1);
   }
 
-  const server = new Server(
+  const server = new McpServer(
     {
       name: 'ClickUp MCP Server',
       version: '1.0.0',
@@ -42,99 +40,8 @@ async function main() {
     }
   );
 
-  const clickUpClient = new ClickUpClient(apiToken, workspaceId);
-
-  server.setRequestHandler(
-    CallToolRequestSchema,
-    async (request: CallToolRequest) => {
-      console.error('Received CallToolRequest:', request);
-      try {
-        if (!request.params.arguments) {
-          throw new ToolError('No arguments provided', 'MISSING_ARGUMENTS');
-        }
-
-        switch (request.params.name) {
-          case 'clickup_authenticate': {
-            const response = await clickUpClient.authenticate();
-            return {
-              content: [{ type: 'text', text: JSON.stringify(response) }],
-            };
-          }
-
-          case 'clickup_get_task': {
-            const { task_id } = request.params.arguments as {
-              task_id: string;
-            };
-            if (!task_id) {
-              throw new ToolError(
-                'Missing required arguments: task_id',
-                'INVALID_ARGUMENTS',
-                { required: ['task_id'] }
-              );
-            }
-            const response = await clickUpClient.getTask(task_id);
-            return {
-              content: [{ type: 'text', text: JSON.stringify(response) }],
-            };
-          }
-
-          case 'clickup_get_task_by_custom_id': {
-            const { custom_id } = request.params.arguments as {
-              custom_id: string;
-            };
-            if (!custom_id) {
-              throw new ToolError(
-                'Missing required arguments: custom_id',
-                'INVALID_ARGUMENTS',
-                { required: ['custom_id'] }
-              );
-            }
-            const response = await clickUpClient.getTaskByCustomId(custom_id);
-            return {
-              content: [{ type: 'text', text: JSON.stringify(response) }],
-            };
-          }
-
-          case 'clickup_get_tasks': {
-            const { task_ids } = request.params.arguments as {
-              task_ids: string[];
-            };
-            if (!task_ids.length) {
-              throw new ToolError(
-                'Missing required arguments: task_ids',
-                'INVALID_ARGUMENTS',
-                { required: ['task_ids'] }
-              );
-            }
-            const response = await clickUpClient.getTasks(task_ids);
-            return {
-              content: [{ type: 'text', text: JSON.stringify(response) }],
-            };
-          }
-
-          default:
-            throw new ToolError(
-              `Unknown tool: ${request.params.name}`,
-              'UNKNOWN_TOOL'
-            );
-        }
-      } catch (error) {
-        console.error('Error executing tool:', error);
-        return formatErrorResponse(error);
-      }
-    }
-  );
-
-  server.setRequestHandler(ListToolsRequestSchema, async () => {
-    console.error('Received ListToolsRequest');
-    return {
-      tools: [
-        authenticateTool,
-        getTaskTool,
-        getTaskByCustomIdTool,
-        getTasksTool,
-      ],
-    };
+  tools.forEach((tool) => {
+    server.tool(tool.name, tool.description, tool.inputSchema, tool.handler);
   });
 
   const transport = new StdioServerTransport();
