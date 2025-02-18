@@ -1,9 +1,30 @@
 {
+  "name": "mcp-clickup",
+  "version": "1.0.0",
+  "description": "ClickUp MCP server",
+  "main": "index.ts",
+  "scripts": {
+    "build": "tsc && shx chmod +x dist/*.js",
+    "prepare": "npm run build",
+    "watch": "tsc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mikah13/mcp-clickup.git"
+  },
+  "author": "mikah13",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mikah13/mcp-clickup/issues"
+  },
+  "homepage": "https://github.com/mikah13/mcp-clickup#readme",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.5.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@types/node": "^22.13.4"
+    "@types/node": "^22.13.4",
+    "shx": "^0.3.4",
+    "typescript": "^5.6.2"
   }
 }
