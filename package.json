@@ -1,6 +1,6 @@
 {
   "name": "mcp-clickup",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A Model Context Protocol server for the ClickUp API.",
   "main": "index.ts",
   "type": "module",
