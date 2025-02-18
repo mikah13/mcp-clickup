@@ -1,4 +1,4 @@
-import { ClickUpTask, ClickUpUser } from './type';
+import { ClickUpUser, ClickUpTask } from './type';
 
 const BASE_URL = 'https://api.clickup.com/api/v2';
 

@@ -17,6 +17,17 @@ import { ToolError, formatErrorResponse } from './common/errors';
 
 async function main() {
   console.error('Starting ClickUp MCP Server...');
+
+  const apiToken = process.env.CLICKUP_API_TOKEN;
+  const workspaceId = process.env.CLICKUP_WORKSPACE_ID;
+
+  if (!apiToken || !workspaceId) {
+    console.error(
+      'Please set CLICKUP_API_TOKEN and CLICKUP_WORKSPACE_ID environment variables'
+    );
+    process.exit(1);
+  }
+
   const server = new Server(
     {
       name: 'ClickUp MCP Server',
@@ -28,6 +39,8 @@ async function main() {
       },
     }
   );
+
+  const clickUpClient = new ClickUpClient(apiToken, workspaceId);
 
   server.setRequestHandler(
     CallToolRequestSchema,
@@ -51,7 +64,6 @@ async function main() {
                 { required: ['api_token', 'workspace_id'] }
               );
             }
-            const clickUpClient = new ClickUpClient(api_token, workspace_id);
             const response = await clickUpClient.authenticate();
             return {
               content: [{ type: 'text', text: JSON.stringify(response) }],
@@ -70,7 +82,6 @@ async function main() {
                 { required: ['api_token', 'task_id'] }
               );
             }
-            const clickUpClient = new ClickUpClient(api_token, '');
             const response = await clickUpClient.getTask(task_id);
             return {
               content: [{ type: 'text', text: JSON.stringify(response) }],
@@ -112,7 +123,6 @@ async function main() {
                 { required: ['api_token', 'workspace_id', 'task_ids'] }
               );
             }
-            const clickUpClient = new ClickUpClient(api_token, workspace_id);
             const response = await clickUpClient.getTasks(task_ids);
             return {
               content: [{ type: 'text', text: JSON.stringify(response) }],
