@@ -7,14 +7,13 @@ import {
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { ClickUpClient } from './common/clickup';
+import { formatErrorResponse, ToolError } from './common/errors';
 import {
   authenticateTool,
   getTaskByCustomIdTool,
   getTasksTool,
   getTaskTool,
 } from './common/tool';
-import { ToolError, formatErrorResponse } from './common/errors';
-
 async function main() {
   console.error('Starting ClickUp MCP Server...');
 

@@ -1,25 +1,41 @@
 {
   "name": "mcp-clickup",
   "version": "1.0.1",
-  "description": "ClickUp MCP server",
+  "description": "A Model Context Protocol server for the ClickUp API.",
   "main": "index.ts",
+  "type": "module",
+  "bin": {
+    "mcp-clickup": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc && shx chmod +x dist/*.js",
     "prepare": "npm run build",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "inspector": "npx @modelcontextprotocol/inspector dist/index.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mikah13/mcp-clickup.git"
+    "url": "https://github.com/mikah13/mcp-clickup.git"
   },
   "author": "mikah13",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/mikah13/mcp-clickup/issues"
   },
+  "keywords": [
+    "clickup",
+    "mcp",
+    "model context protocol",
+    "api",
+    "server"
+  ],
   "homepage": "https://github.com/mikah13/mcp-clickup#readme",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.5.0",
+    "dotenv": "^16.4.7",
     "zod": "^3.24.2"
   },
   "devDependencies": {
